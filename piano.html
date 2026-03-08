@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פסנתר תדרים אינטראקטיבי</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            touch-action: manipulation;
+        }
+
+        #info-panel {
+            margin-bottom: 20px;
+            text-align: center;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 400px;
+        }
+
+        #hz-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        #note-display {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+        }
+
+        .piano {
+            display: flex;
+            position: relative;
+            background: #333;
+            padding: 10px;
+            border-radius: 10px;
+            user-select: none;
+        }
+
+        .key {
+            width: 50px;
+            height: 200px;
+            border: 1px solid #000;
+            background: white;
+            cursor: pointer;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 10px;
+            box-sizing: border-box;
+            transition: background 0.1s;
+        }
+
+        .key:active {
+            background: #e0e0e0;
+        }
+
+        /* קלידים שחורים */
+        .key.black {
+            width: 34px;
+            height: 120px;
+            background: black;
+            color: white;
+            margin-left: -17px;
+            margin-right: -17px;
+            z-index: 2;
+        }
+
+        .key.black:active {
+            background: #444;
+        }
+
+        @media (max-width: 600px) {
+            .key { width: 40px; height: 160px; }
+            .key.black { width: 28px; height: 100px; margin-left: -14px; margin-right: -14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="info-panel">
+        <div id="hz-display">לחצו על קליד</div>
+        <div id="note-display">תדר ב-Hertz</div>
+    </div>
+
+    <div class="piano" id="piano">
+        </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const hzDisplay = document.getElementById('hz-display');
+        const noteDisplay = document.getElementById('note-display');
+        const piano = document.getElementById('piano');
+
+        // רשימת תדרים של אוקטבה מרכזית (מ-C4 עד C5)
+        const notes = [
+            { name: 'C4', freq: 261.63, type: 'white' },
+            { name: 'C#4', freq: 277.18, type: 'black' },
+            { name: 'D4', freq: 293.66, type: 'white' },
+            { name: 'D#4', freq: 311.13, type: 'black' },
+            { name: 'E4', freq: 329.63, type: 'white' },
+            { name: 'F4', freq: 349.23, type: 'white' },
+            { name: 'F#4', freq: 369.99, type: 'black' },
+            { name: 'G4', freq: 392.00, type: 'white' },
+            { name: 'G#4', freq: 415.30, type: 'black' },
+            { name: 'A4', freq: 440.00, type: 'white' },
+            { name: 'A#4', freq: 466.16, type: 'black' },
+            { name: 'B4', freq: 493.88, type: 'white' },
+            { name: 'C5', freq: 523.25, type: 'white' }
+        ];
+
+        function playTone(freq, name) {
+            // יצירת מתנד (Oscillator)
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.type = 'sine'; // צליל נקי
+            oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+            // יצירת "מעטפת" צליל כדי שלא יהיה "קליק" בסוף
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.5);
+
+            // עדכון ה-GUI
+            hzDisplay.innerText = freq.toFixed(2) + " Hz";
+            noteDisplay.innerText = "תו: " + name;
+        }
+
+        // יצירת הקלידים בתוך ה-HTML
+        notes.forEach(note => {
+            const keyDiv = document.createElement('div');
+            keyDiv.className = `key ${note.type}`;
+            
+            // אירועי מגע ולחיצה
+            keyDiv.onmousedown = (e) => {
+                e.preventDefault();
+                playTone(note.freq, note.name);
+            };
+            keyDiv.ontouchstart = (e) => {
+                e.preventDefault();
+                playTone(note.freq, note.name);
+            };
+
+            piano.appendChild(keyDiv);
+        });
+
+        // אתחול האודיו בנגיעה ראשונה (דרישת דפדפנים)
+        document.body.addEventListener('touchstart', function() {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }, false);
+    </script>
+</body>
+</html>
