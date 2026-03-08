@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ניסוי בפיזיקה - גלי קול</title>
+    <title>ניסוי בפיזיקה - נעמי ומיטל</title>
     <style>
         body {
             display: flex;
@@ -26,8 +26,9 @@
         }
 
         .subtitle {
-            color: #7f8c8d;
+            color: #d35400;
             margin-bottom: 20px;
+            font-weight: bold;
         }
 
         #info-panel {
@@ -53,8 +54,11 @@
             margin-top: 5px;
         }
 
+        /* הגדרה שהפסנתר יוצג משמאל לימין (LTR) עבור סדר תווים עולה */
         .piano {
             display: flex;
+            flex-direction: row;
+            direction: ltr; 
             position: relative;
             background: #222;
             padding: 15px 10px 10px 10px;
@@ -103,7 +107,6 @@
             background: #000;
         }
 
-        /* עיצוב הפתק הנפתח */
         .tutorial-container {
             margin-top: 30px;
             width: 85%;
@@ -111,7 +114,7 @@
         }
 
         .tutorial-header {
-            background-color: #3498db;
+            background-color: #9b59b6;
             color: white;
             padding: 12px;
             border-radius: 8px;
@@ -125,17 +128,19 @@
             display: none;
             background-color: #fff;
             padding: 15px;
-            border: 1px solid #3498db;
+            border: 1px solid #9b59b6;
             border-top: none;
             border-bottom-left-radius: 8px;
             border-bottom-right-radius: 8px;
             line-height: 1.6;
+            text-align: center;
         }
 
         .song-line {
             display: block;
             margin-bottom: 10px;
             font-size: 1.1rem;
+            direction: ltr;
         }
 
         @media (max-width: 600px) {
@@ -147,25 +152,25 @@
 <body>
 
     <h1>ניסוי בפיזיקה- מוזיקה וגלי קול</h1>
-    <div class="subtitle">חקירת הקשר בין אורך הגל לתדר</div>
+    <div class="subtitle">נעמי ומיטל המושלמות</div>
 
     <div id="info-panel">
         <div id="hz-display">--- Hz</div>
-        <div id="note-display">לחצו על קליד כדי להתחיל</div>
+        <div id="note-display">לחצו על קליד משמאל לימין</div>
     </div>
 
     <div class="piano" id="piano"></div>
 
     <div class="tutorial-container">
         <div class="tutorial-header" onclick="toggleTutorial()">
-            💡 הקש כדי ללמוד לנגן שיר!
+            🎵 הקש כדי ללמוד לנגן שיר!
         </div>
         <div class="tutorial-content" id="tutorial-text">
-            <strong>יונתן הקטן:</strong><br>
+            <strong>יונתן הקטן:</strong><br><br>
             <span class="song-line">So - Mi - Mi | Fa - Re - Re</span>
             <span class="song-line">Do - Re - Mi - Fa | So - So - So</span>
             <span class="song-line">So - Mi - Mi | Fa - Re - Re</span>
-            <span class="song-line">Do - Mi - So - So | Do (גבוה)</span>
+            <span class="song-line">Do - Mi - So - So | Do(5)</span>
         </div>
     </div>
 
@@ -175,7 +180,6 @@
         const noteDisplay = document.getElementById('note-display');
         const piano = document.getElementById('piano');
 
-        // רשימת תווים עם שמות סולפז'
         const notes = [
             { name: 'Do', freq: 261.63, type: 'white' },
             { name: 'Do#', freq: 277.18, type: 'black' },
@@ -189,7 +193,7 @@
             { name: 'La', freq: 440.00, type: 'white' },
             { name: 'La#', freq: 466.16, type: 'black' },
             { name: 'Si', freq: 493.88, type: 'white' },
-            { name: 'Do', freq: 523.25, type: 'white' }
+            { name: 'Do(5)', freq: 523.25, type: 'white' }
         ];
 
         function playTone(freq, name) {
