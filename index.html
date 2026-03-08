@@ -3,101 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>פסנתר תדרים אינטראקטיבי</title>
+    <title>ניסוי בפיזיקה - גלי קול</title>
     <style>
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            justify-content: flex-start;
+            min-height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Arial, sans-serif;
             touch-action: manipulation;
+            padding-top: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 20px;
         }
 
         #info-panel {
             margin-bottom: 20px;
             text-align: center;
             background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            width: 80%;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 85%;
             max-width: 400px;
         }
 
         #hz-display {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: bold;
-            color: #2c3e50;
+            color: #e74c3c;
         }
 
         #note-display {
             font-size: 1.2rem;
-            color: #7f8c8d;
+            color: #34495e;
+            margin-top: 5px;
         }
 
         .piano {
             display: flex;
             position: relative;
-            background: #333;
-            padding: 10px;
+            background: #222;
+            padding: 15px 10px 10px 10px;
             border-radius: 10px;
             user-select: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
         .key {
-            width: 50px;
-            height: 200px;
-            border: 1px solid #000;
+            width: 55px;
+            height: 220px;
+            border: 1px solid #ccc;
             background: white;
             cursor: pointer;
-            border-bottom-left-radius: 5px;
-            border-bottom-right-radius: 5px;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            padding-bottom: 10px;
+            padding-bottom: 15px;
             box-sizing: border-box;
-            transition: background 0.1s;
+            transition: all 0.1s;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #555;
         }
 
         .key:active {
-            background: #e0e0e0;
+            background: #ecf0f1;
+            transform: translateY(2px);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        /* קלידים שחורים */
         .key.black {
-            width: 34px;
-            height: 120px;
-            background: black;
-            color: white;
-            margin-left: -17px;
-            margin-right: -17px;
+            width: 36px;
+            height: 130px;
+            background: #333;
+            color: #fff;
+            margin-left: -18px;
+            margin-right: -18px;
             z-index: 2;
+            border: 1px solid #000;
         }
 
         .key.black:active {
-            background: #444;
+            background: #000;
+        }
+
+        /* עיצוב הפתק הנפתח */
+        .tutorial-container {
+            margin-top: 30px;
+            width: 85%;
+            max-width: 400px;
+        }
+
+        .tutorial-header {
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .tutorial-content {
+            display: none;
+            background-color: #fff;
+            padding: 15px;
+            border: 1px solid #3498db;
+            border-top: none;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            line-height: 1.6;
+        }
+
+        .song-line {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
         }
 
         @media (max-width: 600px) {
-            .key { width: 40px; height: 160px; }
-            .key.black { width: 28px; height: 100px; margin-left: -14px; margin-right: -14px; }
+            .key { width: 42px; height: 180px; font-size: 0.8rem; }
+            .key.black { width: 30px; height: 110px; margin-left: -15px; margin-right: -15px; }
         }
     </style>
 </head>
 <body>
 
+    <h1>ניסוי בפיזיקה- מוזיקה וגלי קול</h1>
+    <div class="subtitle">חקירת הקשר בין אורך הגל לתדר</div>
+
     <div id="info-panel">
-        <div id="hz-display">לחצו על קליד</div>
-        <div id="note-display">תדר ב-Hertz</div>
+        <div id="hz-display">--- Hz</div>
+        <div id="note-display">לחצו על קליד כדי להתחיל</div>
     </div>
 
-    <div class="piano" id="piano">
+    <div class="piano" id="piano"></div>
+
+    <div class="tutorial-container">
+        <div class="tutorial-header" onclick="toggleTutorial()">
+            💡 הקש כדי ללמוד לנגן שיר!
         </div>
+        <div class="tutorial-content" id="tutorial-text">
+            <strong>יונתן הקטן:</strong><br>
+            <span class="song-line">So - Mi - Mi | Fa - Re - Re</span>
+            <span class="song-line">Do - Re - Mi - Fa | So - So - So</span>
+            <span class="song-line">So - Mi - Mi | Fa - Re - Re</span>
+            <span class="song-line">Do - Mi - So - So | Do (גבוה)</span>
+        </div>
+    </div>
 
     <script>
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -105,70 +175,64 @@
         const noteDisplay = document.getElementById('note-display');
         const piano = document.getElementById('piano');
 
-        // רשימת תדרים של אוקטבה מרכזית (מ-C4 עד C5)
+        // רשימת תווים עם שמות סולפז'
         const notes = [
-            { name: 'C4', freq: 261.63, type: 'white' },
-            { name: 'C#4', freq: 277.18, type: 'black' },
-            { name: 'D4', freq: 293.66, type: 'white' },
-            { name: 'D#4', freq: 311.13, type: 'black' },
-            { name: 'E4', freq: 329.63, type: 'white' },
-            { name: 'F4', freq: 349.23, type: 'white' },
-            { name: 'F#4', freq: 369.99, type: 'black' },
-            { name: 'G4', freq: 392.00, type: 'white' },
-            { name: 'G#4', freq: 415.30, type: 'black' },
-            { name: 'A4', freq: 440.00, type: 'white' },
-            { name: 'A#4', freq: 466.16, type: 'black' },
-            { name: 'B4', freq: 493.88, type: 'white' },
-            { name: 'C5', freq: 523.25, type: 'white' }
+            { name: 'Do', freq: 261.63, type: 'white' },
+            { name: 'Do#', freq: 277.18, type: 'black' },
+            { name: 'Re', freq: 293.66, type: 'white' },
+            { name: 'Re#', freq: 311.13, type: 'black' },
+            { name: 'Mi', freq: 329.63, type: 'white' },
+            { name: 'Fa', freq: 349.23, type: 'white' },
+            { name: 'Fa#', freq: 369.99, type: 'black' },
+            { name: 'So', freq: 392.00, type: 'white' },
+            { name: 'So#', freq: 415.30, type: 'black' },
+            { name: 'La', freq: 440.00, type: 'white' },
+            { name: 'La#', freq: 466.16, type: 'black' },
+            { name: 'Si', freq: 493.88, type: 'white' },
+            { name: 'Do', freq: 523.25, type: 'white' }
         ];
 
         function playTone(freq, name) {
-            // יצירת מתנד (Oscillator)
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
 
-            oscillator.type = 'sine'; // צליל נקי
+            oscillator.type = 'sine';
             oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-            // יצירת "מעטפת" צליל כדי שלא יהיה "קליק" בסוף
-            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
 
             oscillator.connect(gainNode);
             gainNode.connect(audioCtx.destination);
 
             oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.5);
+            oscillator.stop(audioCtx.currentTime + 0.8);
 
-            // עדכון ה-GUI
             hzDisplay.innerText = freq.toFixed(2) + " Hz";
             noteDisplay.innerText = "תו: " + name;
         }
 
-        // יצירת הקלידים בתוך ה-HTML
+        function toggleTutorial() {
+            const content = document.getElementById('tutorial-text');
+            content.style.display = (content.style.display === 'block') ? 'none' : 'block';
+        }
+
         notes.forEach(note => {
             const keyDiv = document.createElement('div');
             keyDiv.className = `key ${note.type}`;
+            keyDiv.innerText = note.name;
             
-            // אירועי מגע ולחיצה
-            keyDiv.onmousedown = (e) => {
+            const handlePress = (e) => {
                 e.preventDefault();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
                 playTone(note.freq, note.name);
             };
-            keyDiv.ontouchstart = (e) => {
-                e.preventDefault();
-                playTone(note.freq, note.name);
-            };
+
+            keyDiv.onmousedown = handlePress;
+            keyDiv.ontouchstart = handlePress;
 
             piano.appendChild(keyDiv);
         });
-
-        // אתחול האודיו בנגיעה ראשונה (דרישת דפדפנים)
-        document.body.addEventListener('touchstart', function() {
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }, false);
     </script>
 </body>
 </html>
